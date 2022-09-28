@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import axios from 'axios';
+import { useKeenSlider } from "keen-slider/react"
 
 import logoImg from './assets/logo-nlw-esports.svg';
 import { GameBanner } from './components/GameBanner';
 import { CreateAdBanner } from './components/CreateAdBanner';
 import { CreateAdModal } from './components/CreateAdModal';
+import ListAdsModal, { AdsProps } from './components/ListAdsModal';
 
 import './styles/main.css';
-import axios from 'axios';
 
 interface Game {
   id: string;
@@ -20,11 +22,20 @@ interface Game {
 
 function App() {
   const [games, setGames] = useState<Game[]>([]);
+  const [ads, setAds] = useState<AdsProps>();
+
+  const [ref] = useKeenSlider<HTMLDivElement>({
+    mode: "free",
+    slides: {
+        perView: 6,
+        spacing: 20
+    }, 
+})
 
   useEffect(() => {
     axios('http://localhost:3333/games').then(response => {
-        setGames(response.data);
-      })
+      setGames(response.data);
+    })
   }, [])
 
   return (
@@ -34,22 +45,40 @@ function App() {
         Seu <span className="text-transparent bg-nlw-gradient bg-clip-text">duo</span> está aqui.
       </h1>
 
-      <div className="grid grid-cols-6 gap-6 mt-16">
-        {games.map(game => {
-          return (
-            <GameBanner
-              key={game.id}
-              title={game.title}
-              bannerUrl={game.bannerUrl}
-              adsCount={game._count.ads} />
-          )
-        })}
+      <div ref={ref} className="mt-16 gap-4 overflow-x-scroll keen-slider">
+        <Dialog.Root>
+          {games.map(game => {
+            return (
+              <div key={game.id} className="min-w-[14vw] keen-slider__slide">
+                <GameBanner
+                  title={game.title}
+                  bannerUrl={game.bannerUrl}
+                  adsCount={game._count.ads}
+                  handleClick={() => {
+                    setAds({
+                      bannerUrl: game.bannerUrl,
+                      id: game.id,
+                      title: game.title
+                    })
+                  }}
+                />
+              </div>
+            )
+          })}
+
+          <ListAdsModal
+            bannerUrl={ads?.bannerUrl}
+            id={ads?.id}
+            title={ads?.title}
+          />
+        </Dialog.Root>
       </div>
+
+     
 
       <Dialog.Root>
         <CreateAdBanner />
         <CreateAdModal />
-        
       </Dialog.Root>
     </div>
   )
