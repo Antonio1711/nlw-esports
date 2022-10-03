@@ -10,6 +10,7 @@ import { CreateAdModal } from './components/CreateAdModal';
 import ListAdsModal, { AdsProps } from './components/ListAdsModal';
 
 import './styles/main.css';
+import { api } from './lib/api';
 
 interface Game {
   id: string;
@@ -33,7 +34,7 @@ function App() {
 })
 
   useEffect(() => {
-    axios('http://localhost:3333/games').then(response => {
+    api.get('/games').then(response => {
       setGames(response.data);
     })
   }, [])
