@@ -22,3 +22,5 @@ Site que lista jogos online da Twitch e cria anúncios para partidas entre jogad
 - phosphor-react;
 - radix-ui;
 - tailwind.
+
+https://user-images.githubusercontent.com/71889113/194927050-1cd4e437-d158-4bc3-b45d-a89b9189e8de.mp4
